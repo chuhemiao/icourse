@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "dfx": "0.9.0",
+  "canisters": {
+    "helloWorld": {
+      "type": "motoko",
+      "main": "src/helloWorld/main.mo"
+    },
+    "helloWorld_assets": {
+      "type": "assets",
+      "source": [
+        "src/helloWorld_assets/assets"
+      ],
+      "dependencies": [
+        "helloWorld"
+      ]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  }
+}
