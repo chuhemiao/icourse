@@ -3,6 +3,10 @@ import Array "mo:base/Array";
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Text "mo:base/Text";
+import List "mo:base/List";
+import Principal "mo:base/Principal";
+import Microblog "mo:base/Principal";
+import Time "mo:base/Time";
 
 actor {
 
@@ -109,4 +113,71 @@ actor {
       status_code = response_code;
     };
   };
+
+  // microblog
+
+  // public type Message = Text;
+
+  public type Message = {
+      content : Text;
+      time: Time.Time;
+  };
+
+  public type Microblog = actor {
+    follow: shared(Principal) -> async (); // 关注对象
+    follows: shared query () -> async [Principal] ; // 关注列表
+    reset_follows: shared () -> async (); // 取消关注
+    post: shared (Text) -> async (); // 发布消息
+    posts: shared query (Int) -> async [Message]; // 返回发布的消息
+    timeline : shared () -> async [Message]; // 返回所有关注对象发布的消息
+  };
+
+  private stable var followed : List.List<Principal> = List.nil();
+
+  public shared func follow(id : Principal ) : async (){
+    followed := List.push(id,followed);
+  };
+
+  public shared query func follows() : async [Principal]{
+    List.toArray(followed);
+  };
+
+  public shared func reset_follows() : async (){
+    followed := List.nil();
+  };
+  
+
+  private stable var messages : List.List<Message> = List.nil();
+
+  public shared(msg) func post(text:Text) : async (){
+    let message : Message = { content=text; time = Time.now()};
+    assert(Principal.toText(msg.caller) == "exp33-minxe-lqmzo-dh3fa-ostfz-tkaue-kn7ow-6cioh-gzfw7-px7yn-pqe");
+    messages := List.push(message, messages) ;
+  };
+
+  public shared query func posts(since: Time.Time) : async [Message]{
+    var filterMessage : List.List<Message> = List.nil();
+    for(msg in Iter.fromList(messages)){
+        if(msg.time > since){
+            filterMessage := List.push(msg, filterMessage);
+        };
+    };
+    List.toArray(filterMessage);
+  };
+
+  public shared(msg) func timeline(since: Time.Time) : async [Message]{
+      var all : List.List<Message> = List.nil();
+
+      for (id in Iter.fromList(followed)){
+        let canister : Microblog = actor(Principal.toText(id));
+        let msgs = await canister.posts(since);
+        for(msg in Iter.fromArray(msgs)){
+          all := List.push(msg,all);
+        }
+      };
+
+      List.toArray(all)
+  };
+
+
 }

@@ -55,3 +55,32 @@ If you are hosting frontend code somewhere without using DFX, you may need to ma
 - sudo dfx canister --network=ic install --all -m upgrade
 
 - sudo dfx deploy --no-wallet --network ic
+
+### microblog
+
+sudo dfx deploy
+sudo dfx canister call microblog post "(\"first xxx\")"
+
+sudo dfx canister call microblog posts "()"
+
+sudo dfx canister call microblog post "(\"second xxx\")"
+
+sudo dfx canister call microblog posts "()"
+
+sudo dfx canister id microblog2
+
+sudo dfx canister id microblog1
+
+sudo dfx canister id microblog
+
+sudo dfx canister call microblog2 follow "(principal \"$(sudo dfx canister id microblog)\")"
+
+sudo dfx canister call microblog2 follows "()"
+
+sudo dfx canister call microblog2 timeline "()"
+
+## time after
+
+```
+1646912687773318971
+```
