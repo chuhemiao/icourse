@@ -6,6 +6,10 @@
       "type": "motoko",
       "main": "src/helloWorld/main.mo"
     },
+    "microblog2": {
+      "type": "motoko",
+      "main": "src/helloWorld/main.mo"
+    },
     "helloWorld_assets": {
       "type": "assets",
       "source": ["src/helloWorld_assets/assets"],
