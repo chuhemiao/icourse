@@ -99,3 +99,7 @@ sudo dfx canister --network ic call microblog2 timeline "(1647146409052325083)"
 ```
 1646912687773318971
 ```
+
+## create canister
+
+`sudo dfx canister call microblog create_canister '()'`
