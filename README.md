@@ -103,3 +103,5 @@ sudo dfx canister --network ic call microblog2 timeline "(1647146409052325083)"
 ## create canister
 
 `sudo dfx canister call microblog create_canister '()'`
+
+dfx deploy --network=ic --with-cycles=2000000000000 --argument '( vec {principal "exp33-minxe-lqmzo-dh3fa-ostfz-tkaue-kn7ow-6cioh-gzfw7-px7yn-pqe"; principal "ndb4h-h6tuq-2iudh-j3opo-trbbe-vljdk-7bxgi-t5eyp-744ga-6eqv6-2ae"; principal "lzf3n-nlh22-cyptu-56v52-klerd-chdxu-t62na-viscs-oqr2d-kyl44-rqe"})'
