@@ -1,0 +1,33 @@
+type ProposeArg = 
+ record {
+   canister_id: opt Canister;
+   code: opt blob;
+   operation: Operation;
+ };
+type Proposal = 
+ record {
+   approvers: vec principal;
+   canister_id: opt Canister;
+   code: opt blob;
+   finished: bool;
+   id: nat;
+   operation: Operation;
+   proposer: principal;
+ };
+type Operation = 
+ variant {
+   createCanister;
+   deleteCanister;
+   installCode;
+   startCanister;
+   stopCanister;
+   uninstallCode;
+ };
+type ControllerCanister = 
+ service {
+   approve: (nat) -> (Proposal);
+   get_propose: (nat) -> (opt Proposal);
+   propose: (ProposeArg) -> (Proposal);
+ };
+type Canister = principal;
+service : (vec principal) -> ControllerCanister
