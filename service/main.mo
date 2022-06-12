@@ -1,10 +1,10 @@
-import Buffer "mo:base/Buffer";
-import Option "mo:base/Option";
+import Arrat "mo:base/Array";
 import Array "mo:base/Array";
 import Blob "mo:base/Blob";
-import Principal "mo:base/Principal";
-
+import Buffer "mo:base/Buffer";
 import IC "./ic";
+import Option "mo:base/Option";
+import Principal "mo:base/Principal";
 import Types "./types";
 
 actor class ControllerCanister(owner_list: [Principal]) = this {
@@ -13,13 +13,13 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
   stable var canister_list : [Principal] = [];
   stable var proposal_id : Nat = 0;
 
-  let M : Nat = owner_list.size() / 2;
+  var M : Nat = owner_list.size() / 2;
   var proposal_list: Buffer.Buffer<Types.Proposal> = Buffer.Buffer<Types.Proposal>(0);
 
   public shared({caller}) func propose(arg: Types.ProposeArg) : async Types.Proposal {
     assert(is_owner(caller));
     assert(check_propose(arg));
-
+    assert(check_member(arg));
     let propose = {
       id = proposal_list.size() + 1;
       proposer= caller;
@@ -28,6 +28,7 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
       canister_id= arg.canister_id;
       approvers= [];
       finished= false;
+      member= arg.member;
     };
 
     proposal_list.add(propose);
@@ -98,6 +99,20 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
             canister_id = Option.unwrap(proposal.canister_id);
           });
         };
+        case(#addMember) {
+          ownerList := Array.append(ownerList, [Option.unwrap(proposal.member)]);
+          M := ownerList.size()/2;
+        };
+        case(#deleMember) {
+          var new_owner_list = Buffer.Buffer<Principal>(ownerList.size()-1);
+          for (member in owner_list.vals()) {
+            if (member != Option.unwrap(proposal.member)) {
+              new_owner_list.add(member);
+            };
+          };
+          ownerList := new_owner_list.toArray();
+          M := ownerList.size()/2;
+        };
       }; 
 
       proposal := finish_proposer(proposal);
@@ -145,6 +160,7 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
 			canister_id = p.canister_id;
 			approvers = p.approvers;
 			finished = true;
+      member = p.member;
   		}
 	};
 
@@ -157,7 +173,8 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
 			canister_id = p.canister_id;
 			approvers = Array.append(p.approvers, [approver]);
 			finished = p.finished;
-  		}
+      member = p.member;
+    }
 	};
 
   	private func update_canister_id(p: Types.Proposal, canister_id: Principal) : Types.Proposal {
@@ -169,8 +186,39 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
 			canister_id = ?canister_id;
 			approvers = p.approvers;
 			finished = p.finished;
+      member = p.member;
 		}
 	};
+
+  private func check_member(arg: Types.ProposeArg) : Bool {
+    switch (arg.operation) {
+      case(#deleMember) {
+        let member = Option.unwrap(arg.member);
+        return switch (Array.find(owner_list, func(owner: Principal): Bool {return owner == member;})) {
+          case(?member) {
+            return true;
+          };
+          case(_) {
+            return false;
+          };
+        };
+      };
+      case (#addMember) {
+        let member = Option.unwrap(arg.member);
+        return switch (Array.find(owner_list, func(owner: Principal): Bool {return owner == member;})) {
+          case(?member) {
+            return false;
+          };
+          case(_) {
+            return true;
+          };
+        };
+      };
+      case (_) {
+        return true;
+      };
+    }
+  };
 
 
 }

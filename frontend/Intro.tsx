@@ -1,17 +1,36 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { demianActor } from './service';
+import { pTypeInfo } from './utils/constant';
+
+const pTypeData = Object.keys(pTypeInfo).map((p: string) => ({
+  label: p.toUpperCase(),
+  value: p
+}));
+
+const initFormValue = {
+  pType: '',
+  canisterId: '',
+  wasm_code: null
+};
 
 function TabPanel(props: any) {
   const { children, value, index, ...other } = props;
 
   const getPropeseList = async () => {
     // @ts-ignore
-    const arrPropose = await demianActor.get_propose(BigInt(0));
+    const arrPropose = await demianActor.propose(BigInt(0));
     console.log('get_propose', arrPropose);
   };
 
@@ -49,10 +68,16 @@ function a11yProps(index: Number) {
 }
 
 export default function BasicTabs() {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
+  };
+
+  const [formValue, setFormPropole] = useState<any>(initFormValue);
+
+  const setAgeHandle = (event: any) => {
+    setFormPropole(event.target.value);
   };
 
   return (
@@ -68,7 +93,41 @@ export default function BasicTabs() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        提案 One
+        <Box sx={{ m: 1, minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel id='demo-simple-select-label'>Propose</InputLabel>
+            <Select
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              value={formValue}
+              label='install'
+              onChange={(formValue) => setAgeHandle(formValue)}>
+              {pTypeData.map((pd) => {
+                return <MenuItem value={pd.label}>{pd.value}</MenuItem>;
+              })}
+            </Select>
+
+            {formValue?.pType == 'create' && (
+              <div>
+                <Typography>CanisterId</Typography>
+                <Input
+                  placeholder='canisterId'
+                  inputProps={formValue.canisterId}
+                />
+                <Typography>Required</Typography>
+              </div>
+            )}
+            {formValue?.pType == 'install' && (
+              <Typography>WASM Code</Typography>
+            )}
+          </FormControl>
+        </Box>
+        <ButtonGroup
+          variant='contained'
+          aria-label='outlined primary button group'>
+          <Button>提交</Button>
+          <Button>取消</Button>
+        </ButtonGroup>
       </TabPanel>
       <TabPanel value={value} index={1}>
         canister列表 Two

@@ -2,14 +2,17 @@ export const idlFactory = ({ IDL }) => {
   const Canister = IDL.Principal;
   const Operation = IDL.Variant({
     'stopCanister' : IDL.Null,
+    'deleMember' : IDL.Null,
     'installCode' : IDL.Null,
     'uninstallCode' : IDL.Null,
     'startCanister' : IDL.Null,
+    'addMember' : IDL.Null,
     'createCanister' : IDL.Null,
     'deleteCanister' : IDL.Null,
   });
   const Proposal = IDL.Record({
     'id' : IDL.Nat,
+    'member' : IDL.Opt(IDL.Principal),
     'code' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'canister_id' : IDL.Opt(Canister),
     'finished' : IDL.Bool,
@@ -18,6 +21,7 @@ export const idlFactory = ({ IDL }) => {
     'approvers' : IDL.Vec(IDL.Principal),
   });
   const ProposeArg = IDL.Record({
+    'member' : IDL.Opt(IDL.Principal),
     'code' : IDL.Opt(IDL.Vec(IDL.Nat8)),
     'canister_id' : IDL.Opt(Canister),
     'operation' : Operation,

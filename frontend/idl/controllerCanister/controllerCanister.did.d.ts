@@ -1,18 +1,23 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type Canister = Principal;
 export interface ControllerCanister {
-  'approve' : (arg_0: bigint) => Promise<Proposal>,
-  'get_propose' : (arg_0: bigint) => Promise<[] | [Proposal]>,
-  'propose' : (arg_0: ProposeArg) => Promise<Proposal>,
+  'approve' : ActorMethod<[bigint], Proposal>,
+  'get_propose' : ActorMethod<[bigint], [] | [Proposal]>,
+  'propose' : ActorMethod<[ProposeArg], Proposal>,
 }
 export type Operation = { 'stopCanister' : null } |
+  { 'deleMember' : null } |
   { 'installCode' : null } |
   { 'uninstallCode' : null } |
   { 'startCanister' : null } |
+  { 'addMember' : null } |
   { 'createCanister' : null } |
   { 'deleteCanister' : null };
 export interface Proposal {
   'id' : bigint,
+  'member' : [] | [Principal],
   'code' : [] | [Array<number>],
   'canister_id' : [] | [Canister],
   'finished' : boolean,
@@ -21,6 +26,7 @@ export interface Proposal {
   'approvers' : Array<Principal>,
 }
 export interface ProposeArg {
+  'member' : [] | [Principal],
   'code' : [] | [Array<number>],
   'canister_id' : [] | [Canister],
   'operation' : Operation,

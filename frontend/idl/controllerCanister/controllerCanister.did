@@ -2,6 +2,7 @@ type ProposeArg =
  record {
    canister_id: opt Canister;
    code: opt blob;
+   member: opt principal;
    operation: Operation;
  };
 type Proposal = 
@@ -11,12 +12,15 @@ type Proposal =
    code: opt blob;
    finished: bool;
    id: nat;
+   member: opt principal;
    operation: Operation;
    proposer: principal;
  };
 type Operation = 
  variant {
+   addMember;
    createCanister;
+   deleMember;
    deleteCanister;
    installCode;
    startCanister;

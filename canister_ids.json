@@ -1,8 +1,8 @@
 {
-  "microblog": {
+  "controllerCanister": {
     "ic": "dwtm2-vqaaa-aaaal-qadxq-cai"
   },
-  "helloWorld_assets": {
+  "frontend": {
     "ic": "blocs-gyaaa-aaaal-qadya-cai"
   }
 }

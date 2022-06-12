@@ -9,6 +9,8 @@ module {
         #startCanister;
         #stopCanister;
         #deleteCanister;
+        #addMember;
+        #deleMember;
     };
 
     public type Proposal = { 
@@ -17,6 +19,7 @@ module {
         code: ?Blob;
         operation: Operation;
         canister_id: ?Canister;
+        member: ?Principal;
         approvers: [Principal];
         finished: Bool;
     };
@@ -25,5 +28,6 @@ module {
         operation: Operation;
         code: ?Blob;
         canister_id: ?Canister;
+        member: ?Principal;
     }
 }
