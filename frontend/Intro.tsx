@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { demianActor } from './service';
 import { pTypeInfo } from './utils/constant';
+// import { ProposeArg,Operation } from './idl/controllerCanister/controllerCanister.did';
 
 const pTypeData = Object.keys(pTypeInfo).map((p: string) => ({
   label: p.toUpperCase(),
@@ -79,6 +80,20 @@ export default function BasicTabs() {
   const setAgeHandle = (event: any) => {
     setFormPropole(event.target.value);
   };
+
+  // create delete add install start uninstall ...
+
+  // const ProposeArg: ProposeArg = {
+  //   member: [],
+  //   code: [[1]],
+  //   canister_id: 'blocs-gyaaa-aaaal-qadya-cai',
+  //   operation:  Operation.addMember ,
+  // };
+
+  // const submitCanister = async () => {
+  //   const arrPropose = await demianActor.propose(ProposeArg);
+  //   console.log('get_propose', arrPropose);
+  // };
 
   return (
     <Box sx={{ width: '100%', marginTop: '30px' }}>
