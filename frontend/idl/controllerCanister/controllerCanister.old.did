@@ -27,14 +27,11 @@ type Operation =
    stopCanister;
    uninstallCode;
  };
-type ControllerCanister = 
- service {
-   approve: (nat) -> (Proposal);
-   get_owner: () -> (vec principal);
-   get_principal: () -> (principal);
-   get_propose: (nat) -> (opt Proposal);
-   get_propose_list: () -> (vec Proposal);
-   propose: (ProposeArg) -> (Proposal);
- };
 type Canister = principal;
-service : (vec principal) -> ControllerCanister
+service : {
+  approve: (nat) -> (Proposal);
+  get_owner: () -> (vec principal);
+  get_principal: () -> (principal);
+  get_propose: (nat) -> (opt Proposal);
+  propose: (ProposeArg) -> (Proposal);
+}

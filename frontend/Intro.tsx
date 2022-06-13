@@ -1,3 +1,4 @@
+import { Principal } from '@dfinity/principal';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -11,9 +12,9 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { ProposeArg } from './idl/controllerCanister/controllerCanister.did';
 import { demianActor } from './service';
 import { pTypeInfo } from './utils/constant';
-// import { ProposeArg,Operation } from './idl/controllerCanister/controllerCanister.did';
 
 const pTypeData = Object.keys(pTypeInfo).map((p: string) => ({
   label: p.toUpperCase(),
@@ -25,19 +26,8 @@ const initFormValue = {
   canisterId: '',
   wasm_code: null
 };
-
 function TabPanel(props: any) {
   const { children, value, index, ...other } = props;
-
-  const getPropeseList = async () => {
-    // @ts-ignore
-    const arrPropose = await demianActor.propose(BigInt(0));
-    console.log('get_propose', arrPropose);
-  };
-
-  useEffect(() => {
-    getPropeseList();
-  }, []);
 
   return (
     <div
@@ -47,7 +37,7 @@ function TabPanel(props: any) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}>
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3 }} key={index}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -70,30 +60,55 @@ function a11yProps(index: Number) {
 
 export default function BasicTabs() {
   const [value, setValue] = useState(0);
-
-  const handleChange = (event: any, newValue: any) => {
-    setValue(newValue);
-  };
+  const [list, setList] = useState([]);
+  const [owner, setOwner] = useState([]);
 
   const [formValue, setFormPropole] = useState<any>(initFormValue);
 
   const setAgeHandle = (event: any) => {
     setFormPropole(event.target.value);
   };
+  const getOwner = async () => {
+    console.log(demianActor, 'demianActor');
+    const owner = await demianActor.get_owner();
+    console.log('owner', owner);
+    //@ts-ignore
+    setOwner(owner);
+  };
+  const getPropeseList = async () => {
+    console.log(demianActor, 'demianActor');
+    const arrPropose = await demianActor.get_propose_list();
+    console.log('get_propose', arrPropose);
+    //@ts-ignore
+    setList(arrPropose);
+  };
 
-  // create delete add install start uninstall ...
+  const submitCanister = async () => {
+    const ProposeArg: ProposeArg = {
+      member: [
+        Principal.fromText(
+          'c526v-pnjpe-x57vs-xe3qb-idgh7-xre3a-jdzef-l654c-5sg4x-5iigp-xae'
+        )
+      ],
+      code: [],
+      canister_id: [],
+      operation: { addMember: null }
+    };
+    const arrPropose = await demianActor.propose(ProposeArg);
+    console.log(arrPropose, 'arrPropose');
+  };
+  const handleChange = (event: any, newValue: any) => {
+    setValue(newValue);
+    // getPropeseList();
+    // getOwner();
+  };
+  console.log(list, 'debug list');
+  console.log(owner, 'debug owner');
 
-  // const ProposeArg: ProposeArg = {
-  //   member: [],
-  //   code: [[1]],
-  //   canister_id: 'blocs-gyaaa-aaaal-qadya-cai',
-  //   operation:  Operation.addMember ,
-  // };
-
-  // const submitCanister = async () => {
-  //   const arrPropose = await demianActor.propose(ProposeArg);
-  //   console.log('get_propose', arrPropose);
-  // };
+  useEffect(() => {
+    getPropeseList();
+    getOwner();
+  }, []);
 
   return (
     <Box sx={{ width: '100%', marginTop: '30px' }}>
@@ -103,8 +118,8 @@ export default function BasicTabs() {
           onChange={handleChange}
           aria-label='basic tabs example'>
           <Tab label='提案' {...a11yProps(0)} />
-          <Tab label='canister列表' {...a11yProps(1)} />
-          <Tab label='小组成员' {...a11yProps(2)} />
+          <Tab label='小组成员' {...a11yProps(1)} />
+          <Tab label='提案列表' {...a11yProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -140,15 +155,35 @@ export default function BasicTabs() {
         <ButtonGroup
           variant='contained'
           aria-label='outlined primary button group'>
-          <Button>提交</Button>
+          <Button onClick={() => submitCanister()}>提交</Button>
           <Button>取消</Button>
         </ButtonGroup>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        canister列表 Two
+        <>
+          {owner.map((item, index) => {
+            return (
+              <div key={index}>
+                小组成员
+                <div> {index}</div>
+                <div>{item.toText()}</div>
+              </div>
+            );
+          })}
+        </>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        小组成员
+        <>
+          {list.map((item, index) => {
+            return (
+              <div key={index}>
+                提案列表
+                <div> {Number(item.id)}</div>
+                <div>{item.member[0].toText()}</div>
+              </div>
+            );
+          })}
+        </>
       </TabPanel>
     </Box>
   );

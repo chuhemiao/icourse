@@ -1,0 +1,6 @@
+// Version: 1.0.0
+actor {
+  stable var canister_list : [Principal];
+  stable var ownerList : [Principal];
+  stable var proposal_id : Nat
+};

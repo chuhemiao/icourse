@@ -4,7 +4,10 @@ import type { ActorMethod } from '@dfinity/agent';
 export type Canister = Principal;
 export interface ControllerCanister {
   'approve' : ActorMethod<[bigint], Proposal>,
+  'get_owner' : ActorMethod<[], Array<Principal>>,
+  'get_principal' : ActorMethod<[], Principal>,
   'get_propose' : ActorMethod<[bigint], [] | [Proposal]>,
+  'get_propose_list' : ActorMethod<[], Array<Proposal>>,
   'propose' : ActorMethod<[ProposeArg], Proposal>,
 }
 export type Operation = { 'stopCanister' : null } |

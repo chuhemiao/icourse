@@ -34,9 +34,22 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
     proposal_list.add(propose);
     propose
   };
+ 
+
+  public func get_owner() :async [Principal] {
+    ownerList
+  };
+
+  public shared({caller}) func get_principal() : async Principal {
+    caller
+  };
 
   public func get_propose(id: Nat) : async ?Types.Proposal {
-    proposal_list.getOpt(id)
+    proposal_list.getOpt(id - 1)
+  };
+
+  public func get_propose_list() : async [Types.Proposal] {
+    proposal_list.toArray()
   };
 
   public shared({caller}) func approve(proposal_id: Nat): async Types.Proposal {
@@ -123,8 +136,6 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
   };
 
 
-
-
   private func is_owner(owner : Principal) : Bool {
     Option.isSome(Array.find(ownerList, func (caller: Principal) : Bool { Principal.equal(caller, owner) }))
   };
@@ -134,7 +145,7 @@ actor class ControllerCanister(owner_list: [Principal]) = this {
       return false;
     };
 
-    if (arg.operation != #createCanister and Option.isNull(arg.canister_id)) {
+    if (arg.operation != #createCanister and Option.isNull(arg.canister_id) and arg.operation != #addMember and arg.operation != #deleMember) {
       return false;
     };
 

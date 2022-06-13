@@ -28,7 +28,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const ControllerCanister = IDL.Service({
     'approve' : IDL.Func([IDL.Nat], [Proposal], []),
+    'get_owner' : IDL.Func([], [IDL.Vec(IDL.Principal)], []),
+    'get_principal' : IDL.Func([], [IDL.Principal], []),
     'get_propose' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], []),
+    'get_propose_list' : IDL.Func([], [IDL.Vec(Proposal)], []),
     'propose' : IDL.Func([ProposeArg], [Proposal], []),
   });
   return ControllerCanister;
